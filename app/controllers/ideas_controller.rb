@@ -1,5 +1,6 @@
 class IdeasController < ApplicationController
-  before_filter :authenticate_user!
+  before_filter :check_authorisation, 
+    except: [:index, :show, :new, :create]
 
   # GET /ideas
   # GET /ideas.json
@@ -80,6 +81,14 @@ class IdeasController < ApplicationController
     respond_to do |format|
       format.html { redirect_to ideas_url }
       format.json { head :no_content }
+    end
+  end
+
+private 
+
+  def check_authorisation
+    unless user_signed_in? && current_user.admin?
+      fail "Access denied" 
     end
   end
 end
